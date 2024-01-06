@@ -178,7 +178,7 @@ class Shot(pg.sprite.Sprite):
     def _move(self):
         self.rect = self.rect.move(0, self.speed * dt)
 
-        if self.rect.bottom <= 0:
+        if self.rect.bottom <= 0 or self.rect.top >= size[1]:
             self.kill()
 
 
@@ -362,6 +362,35 @@ def kill_all_sprites():
     for sprite in all_sprites.sprites():
         sprite.kill()
     all_sprites.empty()
+
+
+def generate_alien_grid(grid, width, height):
+    # Get a set of all unique aliens
+    aliens = []
+
+    for row in grid:
+        for num in row:
+            aliens.append(num)
+
+    aliens = set(aliens)
+
+    aliens = [Alien(images=[f'alien_{num}_1.png', f'alien_{num}_2.png'],
+                    position=(0, 0),
+                    animation_time=0.5,
+                    shot_time=0.5) for num in aliens]
+
+    # Get the sizes of all unique aliens
+    alien_sizes = [alien.rect for alien in aliens]
+
+    # Clear previous aliens
+    kill_all_sprites()
+
+    # Generate the alien grid
+    # TODO: this stupid calculation and then populate the screen with aliens
+    for i, row in enumerate(grid):
+        for i2, col in enumerate(row):
+            all_sprites.add(Alien(images=[f'alien_{col}_1.png', f'alien_{col}_2.png'],
+                                  position=(alien_sizes[col - 1].width * i2, )))
 
 
 if __name__ == "__main__":
